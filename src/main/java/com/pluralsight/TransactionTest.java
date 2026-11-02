@@ -3,28 +3,23 @@ package com.pluralsight;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 public class TransactionTest {
     public static void main(String[] args) {
-        // Create a transaction
-        Transaction transaction = new Transaction(
-                LocalDate.of(2026, 11, 2),
-                LocalTime.of(10, 30),
-                "Lunch",
-                "Walmart",
-                new BigDecimal("-12.50")
-        );
+        // Create the file manager
+        TransactionFileManager fileManager = new TransactionFileManager();
 
-        // Display the transaction
-        System.out.println(transaction);
+        // Read transactions from the CSV file
+        ArrayList<Transaction> transactions =
+                fileManager.readTransactions("src/main/resources/transactions.csv");
 
-        // Test getters
-        System.out.println("Vendor: " + transaction.getVendor());
-        System.out.println("Amount: " + transaction.getAmount());
+        // Display all transactions
+        for (Transaction transaction : transactions) {
+            System.out.println(transaction);
+        }
 
-        // Test setter
-        transaction.setVendor("Target");
-
-        System.out.println("Updated vendor: " + transaction.getVendor());
+        // Display the total number of transactions
+        System.out.println("Total transactions: " + transactions.size());
     }
 }
