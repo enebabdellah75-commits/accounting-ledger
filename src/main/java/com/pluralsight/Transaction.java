@@ -4,15 +4,22 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Represents a single financial transaction with its date, time,
+ * description, vendor, and amount.
+ */
+
 public class Transaction {
-    // Properties
+    // Stores the information for each financial transaction.
     private LocalDate date;
     private LocalTime time;
     private String description;
     private String vendor;
     private BigDecimal amount;
 
-    // Constructor
+    /**
+     * Creates a transaction using the provided details.
+     */
     public Transaction(LocalDate date, LocalTime time, String description,
                        String vendor, BigDecimal amount) {
 
@@ -23,7 +30,8 @@ public class Transaction {
         this.amount = amount;
     }
 
-    // Getters
+    // Getter methods provide access to transaction fields.
+
     public LocalDate getDate() {
         return date;
     }
@@ -44,7 +52,8 @@ public class Transaction {
         return amount;
     }
 
-    // Setters
+    // Setter methods allow transaction fields to be updated.
+
     public void setDate(LocalDate date) {
         this.date = date;
     }
@@ -65,7 +74,9 @@ public class Transaction {
         this.amount = amount;
     }
 
-    // Display transaction
+    /**
+     * Returns the transaction details as a readable string.
+     */
     @Override
     public String toString() {
         return "Transaction{" +

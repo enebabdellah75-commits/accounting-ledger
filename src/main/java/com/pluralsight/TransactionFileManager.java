@@ -9,9 +9,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+
+ // Handles reading transactions from and saving transactions to a CSV file.
 
 public class TransactionFileManager {
-
+    /**
+     * Reads transaction records from a file, converts them into Transaction objects,
+     * and returns them in an ArrayList.
+     */
     public ArrayList<Transaction> readTransactions(String fileName) {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -58,5 +66,30 @@ public class TransactionFileManager {
 
         return transactions;
     }
-}
 
+    /**
+     * Appends a new transaction to the CSV file without replacing existing records.
+     */
+
+
+    public void saveTransaction(String fileName, Transaction transaction) {
+
+        try (BufferedWriter writer =
+                     new BufferedWriter(new FileWriter(fileName, true))) {
+
+            writer.write(
+                    transaction.getDate() + "|" +
+                            transaction.getTime() + "|" +
+                            transaction.getDescription() + "|" +
+                            transaction.getVendor() + "|" +
+                            transaction.getAmount()
+            );
+
+            writer.newLine();
+
+        } catch (IOException e) {
+            System.out.println("Error saving transaction: " + e.getMessage());
+        }
+    }
+
+}
