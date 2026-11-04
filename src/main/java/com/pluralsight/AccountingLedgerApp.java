@@ -235,6 +235,7 @@ public class AccountingLedgerApp {
                                     System.out.println("3) Year To Date");
                                     System.out.println("4) Previous Year");
                                     System.out.println("5) Search by Vendor");
+                                    System.out.println("6) Custom Search");
                                     System.out.println("0) Back to Ledger");
 
                                     System.out.print("Choose an option: ");
@@ -377,6 +378,101 @@ public class AccountingLedgerApp {
                                             }
 
                                             break;
+
+
+
+                                        case "6": {
+                                            System.out.println("\n===== CUSTOM SEARCH =====");
+
+                                            System.out.print("Enter start date (yyyy-MM-dd) or press Enter to skip: ");
+                                            String startDateInput = scanner.nextLine().trim();
+
+                                            System.out.print("Enter end date (yyyy-MM-dd) or press Enter to skip: ");
+                                            String endDateInput = scanner.nextLine().trim();
+
+                                            System.out.print("Enter description or press Enter to skip: ");
+                                            String descriptionSearch = scanner.nextLine().trim();
+
+                                            System.out.print("Enter vendor or press Enter to skip: ");
+                                            String vendorSearchInput = scanner.nextLine().trim();
+
+                                            System.out.print("Enter amount or press Enter to skip: ");
+                                            String amountSearchInput = scanner.nextLine().trim();
+
+                                            LocalDate startDate = null;
+                                            LocalDate endDate = null;
+                                            BigDecimal amountSearch = null;
+
+                                            try {
+                                                if (!startDateInput.isEmpty()) {
+                                                    startDate = LocalDate.parse(startDateInput);
+                                                }
+
+                                                if (!endDateInput.isEmpty()) {
+                                                    endDate = LocalDate.parse(endDateInput);
+                                                }
+
+                                                if (!amountSearchInput.isEmpty()) {
+                                                    amountSearch = new BigDecimal(amountSearchInput);
+                                                }
+
+                                            } catch (java.time.format.DateTimeParseException e) {
+                                                System.out.println("Invalid date. Please use yyyy-MM-dd.");
+                                                break;
+                                            } catch (NumberFormatException e) {
+                                                System.out.println("Invalid amount. Please enter a valid number.");
+                                                break;
+                                            }
+
+                                            if (startDate != null && endDate != null
+                                                    && startDate.isAfter(endDate)) {
+                                                System.out.println("Start date cannot be after end date.");
+                                                break;
+                                            }
+
+                                            System.out.println("\n===== CUSTOM SEARCH RESULTS =====");
+
+                                            boolean customSearchFound = false;
+
+                                            for (Transaction transaction : transactions) {
+
+                                                if (startDate != null
+                                                        && transaction.getDate().isBefore(startDate)) {
+                                                    continue;
+                                                }
+
+                                                if (endDate != null
+                                                        && transaction.getDate().isAfter(endDate)) {
+                                                    continue;
+                                                }
+
+                                                if (!descriptionSearch.isEmpty()
+                                                        && !transaction.getDescription().toLowerCase()
+                                                        .contains(descriptionSearch.toLowerCase())) {
+                                                    continue;
+                                                }
+
+                                                if (!vendorSearchInput.isEmpty()
+                                                        && !transaction.getVendor().toLowerCase()
+                                                        .contains(vendorSearchInput.toLowerCase())) {
+                                                    continue;
+                                                }
+
+                                                if (amountSearch != null
+                                                        && transaction.getAmount().compareTo(amountSearch) != 0) {
+                                                    continue;
+                                                }
+
+                                                System.out.println(transaction);
+                                                customSearchFound = true;
+                                            }
+
+                                            if (!customSearchFound) {
+                                                System.out.println("No transactions matched your search.");
+                                            }
+
+                                            break;
+                                        }
 
                                         case "0":
                                             System.out.println("Returning to Ledger Menu...");
