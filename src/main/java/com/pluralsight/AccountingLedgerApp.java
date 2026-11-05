@@ -9,81 +9,68 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Comparator;
 
-    /**
-     * Main class of the Accounting Ledger application.
-     * Displays the home menu and handles user selections.
-     */
+/**
+ * Main class of the Accounting Ledger application.
+ * Handles the menus and transaction operations.
+ */
 
 public class AccountingLedgerApp {
 
-    /**
-     * Starts the application, loads existing transactions,
-     * and displays the menu until the user chooses to exit.
-     */
+/**
+ * Starts the Accounting Ledger application.
+ * Loads and sorts existing transactions, then displays the home menu
+ * until the user chooses to exit.
+ */
+public static void main(String[] args) {
 
-    public static void main(String[] args) {
+    // Create the scanner and file manager.
+    Scanner scanner = new Scanner(System.in);
+    TransactionFileManager fileManager = new TransactionFileManager();
 
+    // Load existing transactions from the CSV file.
+    ArrayList<Transaction> transactions =
+            fileManager.readTransactions("src/main/resources/transactions.csv");
 
-        Scanner scanner = new Scanner(System.in);
+    // Display transactions from newest to oldest.
+    sortTransactions(transactions);
 
-        // Loads existing transactions from the CSV file.
+    String choice = "";
 
-        TransactionFileManager fileManager = new TransactionFileManager();
+    // Keep the application running until the user exits.
+    while (!choice.equalsIgnoreCase("X")) {
 
-        ArrayList<Transaction> transactions =
-                fileManager.readTransactions("src/main/resources/transactions.csv");
+        showHomeMenu();
 
+        choice = scanner.nextLine().trim();
 
-        // Sorts all transactions by date and time, newest first.
-        sortTransactions(transactions);
+        // Handle the user's menu selection.
+        switch (choice.toUpperCase()) {
 
-        String choice = "";
+            case "D":
+                addDeposit(scanner, fileManager, transactions);
+                break;
 
-        // Keeps the application running until the user selects Exit.
+            case "P":
+                makePayment(scanner, fileManager, transactions);
+                break;
 
-        while (!choice.equalsIgnoreCase("X")) {
+            case "L":
+                showLedgerMenu(scanner, transactions);
+                break;
 
-            showHomeMenu();
+            case "X":
+                System.out.println("Thank you for using Accounting Ledger!");
+                break;
 
-            choice = scanner.nextLine().trim();
-
-            // Processes the user's menu selection.
-
-            switch (choice.toUpperCase()) {
-
-                // Handles deposits by collecting and validating user input.
-
-                case "D":
-                    addDeposit(scanner, fileManager, transactions);
-                    break;
-
-
-                // Handles payments and records them as negative transactions.
-
-                case "P":
-                    makePayment(scanner, fileManager, transactions);
-                    break;
-
-
-                // Opens the ledger section.
-
-                case "L":
-                    showLedgerMenu(scanner, transactions);
-                    break;
-
-                case "X":
-                    System.out.println("Thank you for using Accounting Ledger!");
-                    break;
-
-                default:
-                    System.out.println("Invalid selection. Please try again.");
-                    break;
-            }
+            default:
+                System.out.println("Invalid selection. Please try again.");
+                break;
         }
-
-        scanner.close();
     }
 
+    // Close the scanner when the application ends.
+    scanner.close();
+}
     // Sorts transactions by date and time, newest first.
     private static void sortTransactions(ArrayList<Transaction> transactions) {
         transactions.sort(
@@ -93,7 +80,7 @@ public class AccountingLedgerApp {
         );
     }
 
-        private static void showHomeMenu() {
+    private static void showHomeMenu() {
             System.out.println("\n===== ACCOUNTING LEDGER =====");
             System.out.println("D) Add Deposit");
             System.out.println("P) Make Payment");
@@ -141,7 +128,6 @@ public class AccountingLedgerApp {
                 System.out.println("Invalid amount. Please enter a valid number.");
             }
         }
-
         private static void makePayment(Scanner scanner,
                                         TransactionFileManager fileManager,
                                         ArrayList<Transaction> transactions) {
@@ -183,8 +169,6 @@ public class AccountingLedgerApp {
                 System.out.println("Invalid amount. Please enter a valid number.");
             }
         }
-
-
         private static void showLedgerMenu(Scanner scanner,
                                            ArrayList<Transaction> transactions) {
 
@@ -251,246 +235,7 @@ public class AccountingLedgerApp {
                         break;
 
                     case "R":
-
-                        String reportChoice = "";
-
-                        while (!reportChoice.equals("0")) {
-
-                            System.out.println("\n===== REPORTS MENU =====");
-                            System.out.println("1) Month To Date");
-                            System.out.println("2) Previous Month");
-                            System.out.println("3) Year To Date");
-                            System.out.println("4) Previous Year");
-                            System.out.println("5) Search by Vendor");
-                            System.out.println("6) Custom Search");
-                            System.out.println("0) Back to Ledger");
-
-                            System.out.print("Choose an option: ");
-                            reportChoice = scanner.nextLine().trim();
-
-                            switch (reportChoice) {
-
-                                case "1":
-                                    LocalDate today = LocalDate.now();
-                                    LocalDate startOfMonth = today.withDayOfMonth(1);
-
-                                    System.out.println("\n===== MONTH TO DATE REPORT =====");
-
-                                    boolean transactionFound = false;
-
-                                    for (Transaction transaction : transactions) {
-                                        if (!transaction.getDate().isBefore(startOfMonth)
-                                                && !transaction.getDate().isAfter(today)) {
-
-                                            System.out.println(transaction);
-                                            transactionFound = true;
-                                        }
-                                    }
-
-                                    if (!transactionFound) {
-                                        System.out.println("No transactions found for this month.");
-                                    }
-                                    break;
-
-                                case "2":
-                                    LocalDate previousMonthToday = LocalDate.now();
-
-                                    LocalDate firstDayOfPreviousMonth =
-                                            previousMonthToday.minusMonths(1).withDayOfMonth(1);
-
-                                    LocalDate lastDayOfPreviousMonth =
-                                            previousMonthToday.withDayOfMonth(1).minusDays(1);
-
-                                    System.out.println("\n===== PREVIOUS MONTH REPORT =====");
-
-                                    boolean previousMonthTransactionFound = false;
-
-                                    for (Transaction transaction : transactions) {
-                                        if (!transaction.getDate().isBefore(firstDayOfPreviousMonth)
-                                                && !transaction.getDate().isAfter(lastDayOfPreviousMonth)) {
-
-                                            System.out.println(transaction);
-                                            previousMonthTransactionFound = true;
-                                        }
-                                    }
-
-                                    if (!previousMonthTransactionFound) {
-                                        System.out.println("No transactions found for the previous month.");
-                                    }
-                                    break;
-
-                                case "3":
-                                    LocalDate currentDate = LocalDate.now();
-                                    LocalDate startOfYear = currentDate.withDayOfYear(1);
-
-                                    System.out.println("\n===== YEAR TO DATE REPORT =====");
-
-                                    boolean yearTransactionFound = false;
-
-                                    for (Transaction transaction : transactions) {
-                                        if (!transaction.getDate().isBefore(startOfYear)
-                                                && !transaction.getDate().isAfter(currentDate)) {
-
-                                            System.out.println(transaction);
-                                            yearTransactionFound = true;
-                                        }
-                                    }
-
-                                    if (!yearTransactionFound) {
-                                        System.out.println("No transactions found for this year.");
-                                    }
-                                    break;
-
-                                case "4":
-                                    LocalDate currentYearDate = LocalDate.now();
-
-                                    LocalDate firstDayOfPreviousYear =
-                                            currentYearDate.minusYears(1).withDayOfYear(1);
-
-                                    LocalDate lastDayOfPreviousYear =
-                                            currentYearDate.withDayOfYear(1).minusDays(1);
-
-                                    System.out.println("\n===== PREVIOUS YEAR REPORT =====");
-
-                                    boolean previousYearTransactionFound = false;
-
-                                    for (Transaction transaction : transactions) {
-                                        if (!transaction.getDate().isBefore(firstDayOfPreviousYear)
-                                                && !transaction.getDate().isAfter(lastDayOfPreviousYear)) {
-
-                                            System.out.println(transaction);
-                                            previousYearTransactionFound = true;
-                                        }
-                                    }
-
-                                    if (!previousYearTransactionFound) {
-                                        System.out.println("No transactions found for the previous year.");
-                                    }
-                                    break;
-
-                                case "5":
-                                    System.out.print("Enter vendor name: ");
-                                    String vendorSearch = scanner.nextLine().trim();
-
-                                    boolean vendorFound = false;
-
-                                    System.out.println("\n===== VENDOR SEARCH RESULTS =====");
-
-                                    for (Transaction transaction : transactions) {
-                                        if (transaction.getVendor().equalsIgnoreCase(vendorSearch)) {
-
-                                            System.out.println(transaction);
-                                            vendorFound = true;
-                                        }
-                                    }
-
-                                    if (!vendorFound) {
-                                        System.out.println("No transactions found for this vendor.");
-                                    }
-                                    break;
-
-                                case "6": {
-                                    System.out.println("\n===== CUSTOM SEARCH =====");
-
-                                    System.out.print("Enter start date (yyyy-MM-dd) or press Enter to skip: ");
-                                    String startDateInput = scanner.nextLine().trim();
-
-                                    System.out.print("Enter end date (yyyy-MM-dd) or press Enter to skip: ");
-                                    String endDateInput = scanner.nextLine().trim();
-
-                                    System.out.print("Enter description or press Enter to skip: ");
-                                    String descriptionSearch = scanner.nextLine().trim();
-
-                                    System.out.print("Enter vendor or press Enter to skip: ");
-                                    String vendorSearchInput = scanner.nextLine().trim();
-
-                                    System.out.print("Enter amount or press Enter to skip: ");
-                                    String amountSearchInput = scanner.nextLine().trim();
-
-                                    LocalDate startDate = null;
-                                    LocalDate endDate = null;
-                                    BigDecimal amountSearch = null;
-
-                                    try {
-                                        if (!startDateInput.isEmpty()) {
-                                            startDate = LocalDate.parse(startDateInput);
-                                        }
-
-                                        if (!endDateInput.isEmpty()) {
-                                            endDate = LocalDate.parse(endDateInput);
-                                        }
-
-                                        if (!amountSearchInput.isEmpty()) {
-                                            amountSearch = new BigDecimal(amountSearchInput);
-                                        }
-
-                                    } catch (java.time.format.DateTimeParseException e) {
-                                        System.out.println("Invalid date. Please use yyyy-MM-dd.");
-                                        break;
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Invalid amount. Please enter a valid number.");
-                                        break;
-                                    }
-
-                                    if (startDate != null && endDate != null
-                                            && startDate.isAfter(endDate)) {
-
-                                        System.out.println("Start date cannot be after end date.");
-                                        break;
-                                    }
-
-                                    System.out.println("\n===== CUSTOM SEARCH RESULTS =====");
-
-                                    boolean customSearchFound = false;
-
-                                    for (Transaction transaction : transactions) {
-
-                                        if (startDate != null
-                                                && transaction.getDate().isBefore(startDate)) {
-                                            continue;
-                                        }
-
-                                        if (endDate != null
-                                                && transaction.getDate().isAfter(endDate)) {
-                                            continue;
-                                        }
-
-                                        if (!descriptionSearch.isEmpty()
-                                                && !transaction.getDescription().toLowerCase()
-                                                .contains(descriptionSearch.toLowerCase())) {
-                                            continue;
-                                        }
-
-                                        if (!vendorSearchInput.isEmpty()
-                                                && !transaction.getVendor().toLowerCase()
-                                                .contains(vendorSearchInput.toLowerCase())) {
-                                            continue;
-                                        }
-
-                                        if (amountSearch != null
-                                                && transaction.getAmount().compareTo(amountSearch) != 0) {
-                                            continue;
-                                        }
-
-                                        System.out.println(transaction);
-                                        customSearchFound = true;
-                                    }
-
-                                    if (!customSearchFound) {
-                                        System.out.println("No transactions matched your search.");
-                                    }
-                                    break;
-                                }
-
-                                case "0":
-                                    System.out.println("Returning to Ledger Menu...");
-                                    break;
-
-                                default:
-                                    System.out.println("Invalid selection. Please try again.");
-                                    break;
-                            }
-                        }
+                        showReportsMenu(scanner, transactions);
                         break;
 
                     case "H":
@@ -503,7 +248,249 @@ public class AccountingLedgerApp {
                 }
             }
         }
+        private static void showReportsMenu(Scanner scanner,
+                                            ArrayList<Transaction> transactions) {
 
+            String reportChoice = "";
+
+            while (!reportChoice.equals("0")) {
+
+                System.out.println("\n===== REPORTS MENU =====");
+                System.out.println("1) Month To Date");
+                System.out.println("2) Previous Month");
+                System.out.println("3) Year To Date");
+                System.out.println("4) Previous Year");
+                System.out.println("5) Search by Vendor");
+                System.out.println("6) Custom Search");
+                System.out.println("0) Back to Ledger");
+
+                System.out.print("Choose an option: ");
+                reportChoice = scanner.nextLine().trim();
+
+                switch (reportChoice) {
+
+                    case "1":
+                        LocalDate today = LocalDate.now();
+                        LocalDate startOfMonth = today.withDayOfMonth(1);
+
+                        System.out.println("\n===== MONTH TO DATE REPORT =====");
+
+                        boolean transactionFound = false;
+
+                        for (Transaction transaction : transactions) {
+                            if (!transaction.getDate().isBefore(startOfMonth)
+                                    && !transaction.getDate().isAfter(today)) {
+
+                                System.out.println(transaction);
+                                transactionFound = true;
+                            }
+                        }
+
+                        if (!transactionFound) {
+                            System.out.println("No transactions found for this month.");
+                        }
+                        break;
+
+                    case "2":
+                        LocalDate previousMonthToday = LocalDate.now();
+
+                        LocalDate firstDayOfPreviousMonth =
+                                previousMonthToday.minusMonths(1).withDayOfMonth(1);
+
+                        LocalDate lastDayOfPreviousMonth =
+                                previousMonthToday.withDayOfMonth(1).minusDays(1);
+
+                        System.out.println("\n===== PREVIOUS MONTH REPORT =====");
+
+                        boolean previousMonthTransactionFound = false;
+
+                        for (Transaction transaction : transactions) {
+                            if (!transaction.getDate().isBefore(firstDayOfPreviousMonth)
+                                    && !transaction.getDate().isAfter(lastDayOfPreviousMonth)) {
+
+                                System.out.println(transaction);
+                                previousMonthTransactionFound = true;
+                            }
+                        }
+
+                        if (!previousMonthTransactionFound) {
+                            System.out.println("No transactions found for the previous month.");
+                        }
+                        break;
+
+                    case "3":
+                        LocalDate currentDate = LocalDate.now();
+                        LocalDate startOfYear = currentDate.withDayOfYear(1);
+
+                        System.out.println("\n===== YEAR TO DATE REPORT =====");
+
+                        boolean yearTransactionFound = false;
+
+                        for (Transaction transaction : transactions) {
+                            if (!transaction.getDate().isBefore(startOfYear)
+                                    && !transaction.getDate().isAfter(currentDate)) {
+
+                                System.out.println(transaction);
+                                yearTransactionFound = true;
+                            }
+                        }
+
+                        if (!yearTransactionFound) {
+                            System.out.println("No transactions found for this year.");
+                        }
+                        break;
+
+                    case "4":
+                        LocalDate currentYearDate = LocalDate.now();
+
+                        LocalDate firstDayOfPreviousYear =
+                                currentYearDate.minusYears(1).withDayOfYear(1);
+
+                        LocalDate lastDayOfPreviousYear =
+                                currentYearDate.withDayOfYear(1).minusDays(1);
+
+                        System.out.println("\n===== PREVIOUS YEAR REPORT =====");
+
+                        boolean previousYearTransactionFound = false;
+
+                        for (Transaction transaction : transactions) {
+                            if (!transaction.getDate().isBefore(firstDayOfPreviousYear)
+                                    && !transaction.getDate().isAfter(lastDayOfPreviousYear)) {
+
+                                System.out.println(transaction);
+                                previousYearTransactionFound = true;
+                            }
+                        }
+
+                        if (!previousYearTransactionFound) {
+                            System.out.println("No transactions found for the previous year.");
+                        }
+                        break;
+
+                    case "5":
+                        System.out.print("Enter vendor name: ");
+                        String vendorSearch = scanner.nextLine().trim();
+
+                        boolean vendorFound = false;
+
+                        System.out.println("\n===== VENDOR SEARCH RESULTS =====");
+
+                        for (Transaction transaction : transactions) {
+                            if (transaction.getVendor().equalsIgnoreCase(vendorSearch)) {
+
+                                System.out.println(transaction);
+                                vendorFound = true;
+                            }
+                        }
+
+                        if (!vendorFound) {
+                            System.out.println("No transactions found for this vendor.");
+                        }
+                        break;
+
+                    case "6": {
+                        System.out.println("\n===== CUSTOM SEARCH =====");
+
+                        System.out.print("Enter start date (yyyy-MM-dd) or press Enter to skip: ");
+                        String startDateInput = scanner.nextLine().trim();
+
+                        System.out.print("Enter end date (yyyy-MM-dd) or press Enter to skip: ");
+                        String endDateInput = scanner.nextLine().trim();
+
+                        System.out.print("Enter description or press Enter to skip: ");
+                        String descriptionSearch = scanner.nextLine().trim();
+
+                        System.out.print("Enter vendor or press Enter to skip: ");
+                        String vendorSearchInput = scanner.nextLine().trim();
+
+                        System.out.print("Enter amount or press Enter to skip: ");
+                        String amountSearchInput = scanner.nextLine().trim();
+
+                        LocalDate startDate = null;
+                        LocalDate endDate = null;
+                        BigDecimal amountSearch = null;
+
+                        try {
+                            if (!startDateInput.isEmpty()) {
+                                startDate = LocalDate.parse(startDateInput);
+                            }
+
+                            if (!endDateInput.isEmpty()) {
+                                endDate = LocalDate.parse(endDateInput);
+                            }
+
+                            if (!amountSearchInput.isEmpty()) {
+                                amountSearch = new BigDecimal(amountSearchInput);
+                            }
+
+                        } catch (java.time.format.DateTimeParseException e) {
+                            System.out.println("Invalid date. Please use yyyy-MM-dd.");
+                            break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid amount. Please enter a valid number.");
+                            break;
+                        }
+
+                        if (startDate != null && endDate != null
+                                && startDate.isAfter(endDate)) {
+
+                            System.out.println("Start date cannot be after end date.");
+                            break;
+                        }
+
+                        System.out.println("\n===== CUSTOM SEARCH RESULTS =====");
+
+                        boolean customSearchFound = false;
+
+                        for (Transaction transaction : transactions) {
+
+                            if (startDate != null
+                                    && transaction.getDate().isBefore(startDate)) {
+                                continue;
+                            }
+
+                            if (endDate != null
+                                    && transaction.getDate().isAfter(endDate)) {
+                                continue;
+                            }
+
+                            if (!descriptionSearch.isEmpty()
+                                    && !transaction.getDescription().toLowerCase()
+                                    .contains(descriptionSearch.toLowerCase())) {
+                                continue;
+                            }
+
+                            if (!vendorSearchInput.isEmpty()
+                                    && !transaction.getVendor().toLowerCase()
+                                    .contains(vendorSearchInput.toLowerCase())) {
+                                continue;
+                            }
+
+                            if (amountSearch != null
+                                    && transaction.getAmount().compareTo(amountSearch) != 0) {
+                                continue;
+                            }
+
+                            System.out.println(transaction);
+                            customSearchFound = true;
+                        }
+
+                        if (!customSearchFound) {
+                            System.out.println("No transactions matched your search.");
+                        }
+                        break;
+                    }
+
+                    case "0":
+                        System.out.println("Returning to Ledger Menu...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid selection. Please try again.");
+                        break;
+                }
+            }
+        }
 }
 
 
