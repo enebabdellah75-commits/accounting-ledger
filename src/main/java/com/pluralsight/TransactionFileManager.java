@@ -68,11 +68,10 @@ public class TransactionFileManager {
     }
 
     /**
-     * Appends a new transaction to the CSV file without replacing existing records.
+     * Saves a transaction to the CSV file.
+     * Returns true if saving succeeds, otherwise false.
      */
-
-
-    public void saveTransaction(String fileName, Transaction transaction) {
+    public boolean saveTransaction(String fileName, Transaction transaction) {
 
         try (BufferedWriter writer =
                      new BufferedWriter(new FileWriter(fileName, true))) {
@@ -87,8 +86,11 @@ public class TransactionFileManager {
 
             writer.newLine();
 
+            return true;
+
         } catch (IOException e) {
             System.out.println("Error saving transaction: " + e.getMessage());
+            return false;
         }
     }
 

@@ -10,7 +10,6 @@ import java.time.LocalTime;
  */
 
 public class Transaction {
-    // Stores the information for each financial transaction.
     private LocalDate date;
     private LocalTime time;
     private String description;
