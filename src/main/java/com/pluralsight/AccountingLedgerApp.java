@@ -92,6 +92,12 @@ public class AccountingLedgerApp {
 
                         transactions.add(deposit);
 
+                        transactions.sort(
+                                Comparator.comparing(Transaction::getDate)
+                                        .thenComparing(Transaction::getTime)
+                                        .reversed()
+                        );
+
                         fileManager.saveTransaction("src/main/resources/transactions.csv", deposit);
 
                         System.out.println("Deposit added successfully!");
@@ -134,6 +140,12 @@ public class AccountingLedgerApp {
                         );
 
                         transactions.add(payment);
+
+                        transactions.sort(
+                                Comparator.comparing(Transaction::getDate)
+                                        .thenComparing(Transaction::getTime)
+                                        .reversed()
+                        );
 
                         fileManager.saveTransaction("src/main/resources/transactions.csv", payment);
 

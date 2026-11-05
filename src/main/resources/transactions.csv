@@ -4,3 +4,7 @@
 2026-10-30|09:00:00|Deposit|Bank|200.00
 2026-11-03|10:43:36.133414|test d|bank|100
 2026-11-03|10:45:33.929826|test p|walmart|-67
+2026-11-04|17:55:08.754390|test deposit|test bank|50
+2026-11-04|17:56:21.035309|test payment|walmart|-30
+2026-11-04|18:07:39.111521|sorting test deposit |test bank|75
+2026-11-04|18:08:07.554479|sorting test payment|walmart|-15
