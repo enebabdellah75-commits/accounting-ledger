@@ -78,13 +78,15 @@ public class Transaction {
      */
     @Override
     public String toString() {
-        return "Transaction{" +
-                "date=" + date +
-                ", time=" + time +
-                ", description='" + description + '\'' +
-                ", vendor='" + vendor + '\'' +
-                ", amount=" + amount +
-                '}';
+        return "----------------------------------------\n" +
+                "Date:        " + date + "\n" +
+                "Time:        " + time.format(
+                java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a")) + "\n" +
+                "Description: " + description + "\n" +
+                "Vendor:      " + vendor + "\n" +
+                "Amount:      " + (amount.signum() < 0 ? "-$" : "$")
+                + amount.abs().setScale(2, java.math.RoundingMode.HALF_UP) + "\n" +
+                "----------------------------------------";
     }
 }
 
